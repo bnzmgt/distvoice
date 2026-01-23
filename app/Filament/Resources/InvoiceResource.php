@@ -15,6 +15,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Hidden;
+use Filament\Tables\Actions\Action;
 
 class InvoiceResource extends Resource
 {
@@ -151,6 +152,11 @@ class InvoiceResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->visible(fn (Invoice $record) => $record->status !== 'paid'),
+                    Action::make('pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn ($record) => route('invoices.pdf', $record))
+                    ->openUrlInNewTab(),
             ]);
     }
 
