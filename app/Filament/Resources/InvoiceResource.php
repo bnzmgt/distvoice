@@ -17,6 +17,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Hidden;
 use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvoiceMail;
 
 class InvoiceResource extends Resource
 {
@@ -163,23 +165,37 @@ class InvoiceResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->visible(fn (Invoice $record) => $record->status !== 'paid'),
-                    Action::make('public_link')
-                    ->label('Public Link')
-                    ->icon('heroicon-o-link')
-                    ->action(function ($record) {
-                        $url = route('public.invoice.show', $record->public_token);
+                    Action::make('send_email')
+                        ->label('Send Email')
+                        ->icon('heroicon-o-paper-airplane')
+                        ->requiresConfirmation()
+                        ->action(function ($record) {
+                            Mail::to($record->client->email)
+                                ->send(new InvoiceMail($record));
 
-                        Notification::make()
-                            ->title('Public link ready')
-                            ->body($url)
-                            ->success()
-                            ->send();
+                            Notification::make()
+                                ->title('Invoice email sent')
+                                ->body('Invoice berhasil dikirim ke email klien.')
+                                ->success()
+                                ->send();
+                    }),
+                    Action::make('public_link')
+                        ->label('Public Link')
+                        ->icon('heroicon-o-link')
+                        ->action(function ($record) {
+                            $url = route('public.invoice.show', $record->public_token);
+
+                            Notification::make()
+                                ->title('Public link ready')
+                                ->body($url)
+                                ->success()
+                                ->send();
                     }),
                     Action::make('pdf')
-                    ->label('PDF')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn ($record) => route('invoices.pdf', $record))
-                    ->openUrlInNewTab(),
+                        ->label('PDF')
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->url(fn ($record) => route('invoices.pdf', $record))
+                        ->openUrlInNewTab(),
             ]);
     }
 
