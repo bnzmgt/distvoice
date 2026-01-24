@@ -85,4 +85,9 @@ class Invoice extends Model
         });
     }
 
+    public function quotation()
+    {
+        return $this->belongsTo(Quotation::class);
+    }
+
 }
