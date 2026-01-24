@@ -90,4 +90,14 @@ class Invoice extends Model
         return $this->belongsTo(Quotation::class);
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function getPaidAmountAttribute()
+    {
+        return $this->payments()->sum('amount');
+    }
+
 }

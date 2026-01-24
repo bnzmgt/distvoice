@@ -234,6 +234,13 @@ class InvoiceResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            \App\Filament\Resources\InvoiceResource\RelationManagers\PaymentsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
