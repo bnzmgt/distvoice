@@ -57,6 +57,16 @@ class InvoiceResource extends Resource
                                 'paid' => 'Paid',
                                 'cancelled' => 'Cancelled',
                             ])
+                            ->reactive()
+                                ->afterStateUpdated(function ($state) {
+                                    if ($state === 'paid') {
+                                        \Filament\Notifications\Notification::make()
+                                            ->title('Invoice terkunci')
+                                            ->body('Status PAID membuat invoice menjadi read-only.')
+                                            ->warning()
+                                            ->send();
+                                    }
+                                })
                             ->default('draft')
                             ->required(),
 
