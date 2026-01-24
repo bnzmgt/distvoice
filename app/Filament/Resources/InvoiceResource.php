@@ -224,6 +224,13 @@ class InvoiceResource extends Resource
                         ->icon('heroicon-o-arrow-down-tray')
                         ->url(fn ($record) => route('invoices.pdf', $record))
                         ->openUrlInNewTab(),
+            ])
+            ->headerActions([
+                \Filament\Tables\Actions\Action::make('export_csv')
+                    ->label('Export CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->url(fn () => route('invoices.export.csv'))
+                    ->openUrlInNewTab(),
             ]);
     }
 

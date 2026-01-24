@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoicePdfController;
 use App\Http\Controllers\PublicInvoiceController;
+use App\Services\InvoiceExportService;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,6 +22,9 @@ Route::middleware(['auth'])->group(function () {
         ->name('invoices.show');
     Route::get('/invoices/{invoice}/pdf', [InvoicePdfController::class, 'download'])
         ->name('invoices.pdf');
+    Route::middleware(['auth'])->get('/invoices/export/csv', function (InvoiceExportService $service) {
+        return $service->exportCsv(request()->only(['status', 'from', 'to']));
+        })->name('invoices.export.csv');
 
 });
 
