@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Invoice extends Model
 {
@@ -60,6 +61,12 @@ class Invoice extends Model
 
     protected static function booted()
     {
+        static::creating(function (Invoice $invoice) {
+            if (empty($invoice->public_token)) {
+                $invoice->public_token = Str::uuid()->toString();
+            }
+        });
+
         static::saved(function (Invoice $invoice) {
             $subtotal = $invoice->items()
                 ->select(DB::raw('SUM(qty * price) as subtotal'))

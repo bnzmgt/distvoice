@@ -16,6 +16,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Hidden;
 use Filament\Tables\Actions\Action;
+use Filament\Notifications\Notification;
 
 class InvoiceResource extends Resource
 {
@@ -152,6 +153,18 @@ class InvoiceResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->visible(fn (Invoice $record) => $record->status !== 'paid'),
+                    Action::make('public_link')
+                    ->label('Public Link')
+                    ->icon('heroicon-o-link')
+                    ->action(function ($record) {
+                        $url = route('public.invoice.show', $record->public_token);
+
+                        Notification::make()
+                            ->title('Public link ready')
+                            ->body($url)
+                            ->success()
+                            ->send();
+                    }),
                     Action::make('pdf')
                     ->label('PDF')
                     ->icon('heroicon-o-arrow-down-tray')
