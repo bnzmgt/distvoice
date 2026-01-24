@@ -19,6 +19,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\InvoiceMail;
+use Illuminate\Support\Str;
 
 class InvoiceResource extends Resource
 {
@@ -179,9 +180,36 @@ class InvoiceResource extends Resource
                                 ->success()
                                 ->send();
                     }),
+                    Action::make('whatsapp')
+                        ->label('WhatsApp')
+                        ->icon('heroicon-o-chat-bubble-left-right')
+                        ->visible(fn ($record) => ! empty($record->public_token))
+                        ->url(function ($record) {
+
+                            $phone = preg_replace('/[^0-9]/', '', $record->client->phone);
+
+                            // Normalisasi nomor (Indonesia)
+                            if (\Illuminate\Support\Str::startsWith($phone, '0')) {
+                                $phone = '62' . substr($phone, 1);
+                            }
+
+                            $link = route('public.invoice.show', $record->public_token);
+
+                            $message = urlencode(
+                                "Halo {$record->client->name},\n" .
+                                "Berikut invoice {$record->invoice_number}.\n" .
+                                "Silakan cek di link berikut:\n" .
+                                "{$link}\n\n" .
+                                "Terima kasih."
+                            );
+
+                            return "https://wa.me/{$phone}?text={$message}";
+                    })
+                    ->openUrlInNewTab(),
                     Action::make('public_link')
                         ->label('Public Link')
                         ->icon('heroicon-o-link')
+                        ->visible(fn ($record) => ! empty($record->public_token))
                         ->action(function ($record) {
                             $url = route('public.invoice.show', $record->public_token);
 
