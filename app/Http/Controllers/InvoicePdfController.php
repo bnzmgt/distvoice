@@ -9,7 +9,7 @@ class InvoicePdfController extends Controller
 {
     public function download(Invoice $invoice)
     {
-        $invoice->load(['client', 'items.product']);
+        $invoice->load(['client', 'items.product', 'company']);
 
         $pdf = Pdf::loadView('pdf.invoice', [
             'invoice' => $invoice,

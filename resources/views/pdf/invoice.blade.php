@@ -29,7 +29,16 @@
     </style>
 </head>
 <body>
-
+@if($invoice->company)
+    <div style="margin-bottom: 20px;">
+        <strong>{{ $invoice->company->name }}</strong><br>
+        @if($invoice->company->legal_name)
+            {{ $invoice->company->legal_name }}<br>
+        @endif
+        {{ $invoice->company->address }}<br>
+        {{ $invoice->company->email }} | {{ $invoice->company->phone }}
+    </div>
+@endif
     <h1>Invoice {{ $invoice->invoice_number }}</h1>
 
     <table class="no-border">

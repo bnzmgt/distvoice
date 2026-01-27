@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Services\InvoiceNumberGenerator;
+use App\Models\Company;
 
 class Invoice extends Model
 {
@@ -63,19 +64,23 @@ class Invoice extends Model
     protected static function booted()
     {
         static::creating(function (Invoice $invoice) {
+            if (empty($invoice->company_id)) {
+                $defaultCompany = Company::getDefault();
+
+                if ($defaultCompany) {
+                    $invoice->company_id = $defaultCompany->id;
+                }
+            }
+
             if (empty($invoice->invoice_number)) {
                 $generator = app(InvoiceNumberGenerator::class);
                 $invoice->invoice_number = $generator->generate('INV');
             }
-        });
 
-        static::creating(function (Invoice $invoice) {
             if (empty($invoice->public_token)) {
                 $invoice->public_token = Str::uuid()->toString();
             }
-        });
 
-        static::saved(function (Invoice $invoice) {
             $subtotal = $invoice->items()
                 ->select(DB::raw('SUM(qty * price) as subtotal'))
                 ->value('subtotal') ?? 0;
@@ -106,6 +111,11 @@ class Invoice extends Model
     public function getPaidAmountAttribute()
     {
         return $this->payments()->sum('amount');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
 }

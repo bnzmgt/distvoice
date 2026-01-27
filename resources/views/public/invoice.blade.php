@@ -23,6 +23,15 @@
 </head>
 <body>
 
+@if($invoice->company)
+    <div class="mb-4">
+        <h3>{{ $invoice->company->name }}</h3>
+        <p>
+            {{ $invoice->company->address }}<br>
+            {{ $invoice->company->email }} | {{ $invoice->company->phone }}
+        </p>
+    </div>
+@endif
 <h1>Invoice {{ $invoice->invoice_number }}</h1>
 <div class="muted">
     <span class="badge {{ $invoice->status }}">{{ strtoupper($invoice->status) }}</span>
