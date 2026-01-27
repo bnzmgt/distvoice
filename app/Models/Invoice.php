@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Services\InvoiceNumberGenerator;
 
 class Invoice extends Model
 {
@@ -61,6 +62,13 @@ class Invoice extends Model
 
     protected static function booted()
     {
+        static::creating(function (Invoice $invoice) {
+            if (empty($invoice->invoice_number)) {
+                $generator = app(InvoiceNumberGenerator::class);
+                $invoice->invoice_number = $generator->generate('INV');
+            }
+        });
+
         static::creating(function (Invoice $invoice) {
             if (empty($invoice->public_token)) {
                 $invoice->public_token = Str::uuid()->toString();
