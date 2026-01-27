@@ -6,9 +6,52 @@ use App\Http\Controllers\InvoicePdfController;
 use App\Http\Controllers\PublicInvoiceController;
 use App\Services\InvoiceExportService;
 
+// App Controllers
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\App\DashboardController;
+use App\Http\Controllers\App\InvoiceController as AppInvoiceController;
+use App\Http\Controllers\App\ClientController;
+use App\Http\Controllers\App\ProductController;
+
+/*
+|--------------------------------------------------------------------------
+| LOGIN ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::get('/login', [LoginController::class, 'showLoginForm'])
+    ->name('login');
+
+Route::post('/login', [LoginController::class, 'login']);
+
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC ROUTE (NO AUTH)
+|--------------------------------------------------------------------------
+*/
 Route::get('/', function () {
     return view('welcome');
 });
+
+/*
+|--------------------------------------------------------------------------
+| APP ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')
+    ->prefix('app')
+    ->name('app.')
+    ->group(function () {
+
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
+
+        Route::resource('invoices', AppInvoiceController::class);
+        Route::resource('clients', ClientController::class);
+        Route::resource('products', ProductController::class);
+    });
 
 /*
 |--------------------------------------------------------------------------
