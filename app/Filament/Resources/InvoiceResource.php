@@ -36,9 +36,9 @@ class InvoiceResource extends Resource
                 Forms\Components\Section::make('Invoice Info')
                     ->schema([
                         Forms\Components\TextInput::make('invoice_number')
-                            ->required()
+                            ->disabled()
                             ->unique(ignoreRecord: true)
-                            ->disabled(fn ($record) => $record?->status === 'paid'),
+                            ->dehydrated(false),
 
                         Forms\Components\Select::make('client_id')
                             ->relationship('client', 'name')

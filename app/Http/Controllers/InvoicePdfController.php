@@ -15,6 +15,8 @@ class InvoicePdfController extends Controller
             'invoice' => $invoice,
         ])->setPaper('a4');
 
-        return $pdf->download('invoice-' . $invoice->invoice_number . '.pdf');
+        $filename = 'invoice-' . str_replace('/', '-', $invoice->invoice_number) . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

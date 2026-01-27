@@ -80,7 +80,9 @@ class Invoice extends Model
             if (empty($invoice->public_token)) {
                 $invoice->public_token = Str::uuid()->toString();
             }
+        });
 
+        static::saved(function (Invoice $invoice) {
             $subtotal = $invoice->items()
                 ->select(DB::raw('SUM(qty * price) as subtotal'))
                 ->value('subtotal') ?? 0;
